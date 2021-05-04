@@ -25,8 +25,7 @@ import static java.lang.String.valueOf;
 
 /**
  * Author: Austin Scott
- * Description: This activity navigates between home fragment and the pedometer fragment.
- *              It also has the bottom navigation menu.
+ * Description: This activity utilizes a TYPE_STEP_COUNTER and increments the steps on the activity.
  */
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
