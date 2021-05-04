@@ -49,8 +49,9 @@ public class PedometerViewModel extends ViewModel {
     /**
      * increment the current count by 1
      */
-    public void increment(){
-        mCount.setValue(mCount.getValue() + 1);
+    public void increment(int values){
+
+        mCount.setValue(mCount.getValue() + values);
     }
 
 }

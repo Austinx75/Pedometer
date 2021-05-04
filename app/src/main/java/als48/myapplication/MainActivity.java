@@ -7,60 +7,77 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.auth0.android.jwt.JWT;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import als48.myapplication.UI.model.UserInfoViewModel;
 
+import static java.lang.String.valueOf;
+
 /**
  * Author: Austin Scott
  * Description: This activity navigates between home fragment and the pedometer fragment.
  *              It also has the bottom navigation menu.
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
-    private AppBarConfiguration mAppBarConfiguration;
+    TextView tv_steps;
+    SensorManager sensorManager;
+    boolean running = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        MainActivityArgs args = MainActivityArgs.fromBundle(getIntent().getExtras());
-        String email = args.getEmail();
 
-        JWT jwt = new JWT(args.getJwt());
+        tv_steps = (TextView) findViewById(R.id.tv_steps);
 
-        // Check to see if the web token is still valid or not. To make a JWT expire after a
-        // longer or shorter time period, change the expiration time when the JWT is
-        // created on the web service.
-        if(!jwt.isExpired(0)) {
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
-            //Take note of the need to use the setter, since we have to use a no-arg constructor
-            //model.setJWT(jwt);
-            new ViewModelProvider(this,
-                    new UserInfoViewModel.UserInfoViewModelFactory(args.getEmail(), args.getJwt())).get(UserInfoViewModel.class);
-        } else {
-            //In production code, add in your own error handling/flow for when the JWT is expired
-            throw new IllegalStateException("JWT is expired!");
-        }
-
-        BottomNavigationView navView = findViewById(R.id.nav_view);
-
-        mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_pedometer).build();
-
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupActionBarWithNavController(this, navController,mAppBarConfiguration);
-        NavigationUI.setupWithNavController(navView, navController);
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        //accelerometer.register();
+        running = true;
+        Sensor countSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        if(countSensor != null){
+            sensorManager.registerListener(this, countSensor, SensorManager.SENSOR_DELAY_UI);
+        } else {
+            Toast.makeText(this, "Sensor not found!", Toast.LENGTH_SHORT).show();
+        }
+
+    }
 
     @Override
-    public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
-                || super.onSupportNavigateUp();
+    public void onPause(){
+        super.onPause();
+        //accelerometer.unRegister();
+        running = false;
+        //sensorManager.unregisterListener(this);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+
+        if(running){
+            tv_steps.setText(String.valueOf(event.values[0]));
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
     }
 }

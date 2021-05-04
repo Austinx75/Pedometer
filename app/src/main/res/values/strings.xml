@@ -22,5 +22,6 @@
     <!-- This is for Chat Fragments-->
     <string name="title_chats">Messages</string>
     <string name="title_pedometer">Pedometer</string>
-    <string name="title_steps">Total Steps: 0</string>
+    <string name="title_steps">Total Steps</string>
+    <string name="title_blogs">Blogs</string>
 </resources>

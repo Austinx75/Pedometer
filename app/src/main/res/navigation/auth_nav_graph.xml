@@ -38,12 +38,5 @@
         android:id="@+id/mainActivity"
         android:name="als48.myapplication.MainActivity"
         android:label="activity_main"
-        tools:layout="@layout/activity_main" >
-        <argument
-            android:name="jwt"
-            app:argType="string" />
-        <argument
-            android:name="email"
-            app:argType="string" />
-    </activity>
+        tools:layout="@layout/activity_main" />
 </navigation>
